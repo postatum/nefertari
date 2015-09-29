@@ -195,7 +195,27 @@ class BaseView(OptionsViewMixin):
         results for default response renderers to work properly.
         """
         from nefertari.elasticsearch import ES
-        return ES(self.Model.__name__).get_collection(**self._query_params)
+        items = ES(self.Model.__name__).get_collection(
+            **self._query_params)
+        if self._auth_enabled:
+            wrapper = wrappers.acl_filter_collection(
+                self._factory, self.request)
+            items = wrapper(result=items)
+        return items
+
+    def get_collection(self):
+        """ Query DB collection and return results.
+
+        This is default implementation of querying DB collection with
+        `self._query_params`. It must return found DB collection
+        results for default response renderers to work properly.
+        """
+        items = self.Model.get_collection(**self._query_params)
+        if self._auth_enabled:
+            wrapper = wrappers.acl_filter_collection(
+                self._factory, self.request)
+            items = wrapper(result=items)
+        return items
 
     def fill_null_values(self):
         """ Fill missing model fields in JSON with {key: null value}.
@@ -287,10 +307,12 @@ class BaseView(OptionsViewMixin):
 
         # Privacy wrappers
         if self._auth_enabled:
+            # Response privacy
             for meth in ('index', 'show', 'create', 'update', 'replace'):
                 self._after_calls[meth] += [
                     wrappers.apply_privacy(self.request),
                 ]
+            # Request privacy
             for meth in ('update', 'replace', 'update_many'):
                 self._before_calls[meth] += [
                     wrappers.apply_request_privacy(

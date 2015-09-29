@@ -449,3 +449,27 @@ def set_public_limits(view):
     _start = _start or _page * _limit
     if _start + _limit > public_max:
         view._query_params['_limit'] = max((public_max - _start), 0)
+
+
+class acl_filter_collection(object):
+    def __init__(self, parent, request):
+        self.parent = parent
+        self.request = request
+
+    def __call__(self, **kwargs):
+        result = kwargs['result']
+        return result
+
+
+class acl_filter_nested(object):
+    """ Perform ACL filtering of nested objects.
+
+    Wrapper processes collection items data wrapped in dicts.
+    """
+    def __init__(self, parent, request):
+        self.parent = parent
+        self.request = request
+
+    def __call__(self, **kwargs):
+        result = kwargs['result']
+        return result
