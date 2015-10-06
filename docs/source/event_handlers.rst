@@ -49,6 +49,9 @@ Complete list of events:
     * AfterCollectionOptions
 
 
+Note that nefertari authentication system triggers events as well. In particular, default nefertari authentication views trigger BeforeCreate and AfterCreate events. When event was triggered by instance or subclass of nefertari authentication views, event property ``event.is_auth_view`` will equal to ``True``. This may require additional care when event handlers mutate fields which participate in authentication process.
+
+
 Predicates
 ----------
 

@@ -28,6 +28,17 @@ class RequestEvent(object):
         self.field = field
         self.instance = instance
 
+    @property
+    def is_auth_view(self):
+        """ Property that returns boolean that identifiers whether
+        view on which event is run is auth view.
+        """
+        from nefertari.authentication.views import (
+            TicketAuthViewMixin, TokenAuthViewMixin)
+        return isinstance(
+            self.view,
+            (TicketAuthViewMixin, TokenAuthViewMixin))
+
     def set_field_value(self, field_name, value):
         """ Set value of field named `field_name`.
 
