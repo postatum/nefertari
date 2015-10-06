@@ -34,10 +34,16 @@ class RequestEvent(object):
         view on which event is run is auth view.
         """
         from nefertari.authentication.views import (
-            TicketAuthViewMixin, TokenAuthViewMixin)
+            TicketAuthLoginView,
+            TicketAuthLogoutView,
+            TokenAuthClaimView,
+            TokenAuthResetView)
         return isinstance(
             self.view,
-            (TicketAuthViewMixin, TokenAuthViewMixin))
+            (TicketAuthLoginView,
+             TicketAuthLogoutView,
+             TokenAuthClaimView,
+             TokenAuthResetView))
 
     def set_field_value(self, field_name, value):
         """ Set value of field named `field_name`.
