@@ -40,27 +40,28 @@ class ESHttpConnection(elasticsearch.Urllib3HttpConnection):
         raise exception_response(400, detail=message)
 
     def perform_request(self, *args, **kw):
-        try:
-            if log.level == logging.DEBUG:
-                msg = str(args)
-                if len(msg) > 512:
-                    msg = msg[:300] + '...TRUNCATED...' + msg[-212:]
-                log.debug(msg)
-            resp = super(ESHttpConnection, self).perform_request(*args, **kw)
-        except Exception as e:
-            log.error(e.error)
-            status_code = e.status_code
-            if status_code == 404 and 'IndexMissingException' in e.error:
-                raise IndexNotFoundException()
-            if status_code == 'N/A':
-                status_code = 400
-            raise exception_response(
-                status_code,
-                explanation=six.b(e.error),
-                extra=dict(data=e))
-        else:
-            self._catch_index_error(resp)
-            return resp
+        # try:
+            # if log.level == logging.DEBUG:
+            #     msg = str(args)
+            #     if len(msg) > 512:
+            #         msg = msg[:300] + '...TRUNCATED...' + msg[-212:]
+            #     log.debug(msg)
+        resp = super(ESHttpConnection, self).perform_request(*args, **kw)
+        return resp
+        # except Exception as e:
+        #     log.error(e.error)
+        #     status_code = e.status_code
+        #     if status_code == 404 and 'IndexMissingException' in e.error:
+        #         raise IndexNotFoundException()
+        #     if status_code == 'N/A':
+        #         status_code = 400
+        #     raise exception_response(
+        #         status_code,
+        #         explanation=six.b(e.error),
+        #         extra=dict(data=e))
+        # else:
+        #     self._catch_index_error(resp)
+        #     return resp
 
 
 def includeme(config):
