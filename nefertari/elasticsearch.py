@@ -232,13 +232,10 @@ class ES(object):
             return
         log.info('Setting up ES mappings for all existing models')
         models = engine.get_document_classes()
-        try:
-            for model_name, model_cls in models.items():
-                if getattr(model_cls, '_index_enabled', False):
-                    es = cls(model_cls.__name__)
-                    es.put_mapping(body=model_cls.get_es_mapping())
-        except JHTTPBadRequest as ex:
-            raise Exception(ex.json['extra']['data'])
+        for model_name, model_cls in models.items():
+            if getattr(model_cls, '_index_enabled', False):
+                es = cls(model_cls.__name__)
+                es.put_mapping(body=model_cls.get_es_mapping())
         cls._mappings_setup = True
 
     def delete_mapping(self):
